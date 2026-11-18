@@ -42,35 +42,35 @@
 ## 4. Grammar
     <alpha> is empty string
 
-    <op1> -> <op2> <op1'>
-    <op1'> -> + <op2> <op1'>
-    <op1'> -> - <op2>  <op1'>
-    <op1'> -> <alpha>
+    1. <op1> -> <op2> <op1'>
+    2. <op1'> -> + <op2> <op1'>
+    3. <op1'> -> - <op2>  <op1'>
+    4. <op1'> -> <alpha>
 
-    <op2> -> <op3> <op2'>
-    <op2'> -> * <op3> <op2'>
-    <op2'> -> / <op3>  <op2'>
-    <op2'> -> <alpha>
+    5. <op2> -> <op3> <op2'>
+    6. <op2'> -> * <op3> <op2'>
+    7. <op2'> -> / <op3>  <op2'>
+    8. <op2'> -> <alpha>
 
-    <op3> -> - <op3>
-    <op3> -> + <op3>
-    <op3> -> <op4>
+    9. <op3> -> - <op3>
+    10. <op3> -> + <op3>
+    11. <op3> -> <op4>
 
 
-    <op4> -> <op5> <op4'>
-    <op4'> -> ^ <op3>
-    <op4'> -> <alpha>
+    12. <op4> -> <op5> <op4'>
+    13. <op4'> -> ^ <op3>
+    14. <op4'> -> <alpha>
 
-    <op5> -> NUM
-    <op5> -> variable
-    <op5> -> <func> lpar <op1> rpar
-    <op5> -> lpar <op1> rpar
-    <func> -> sin
-    <func> -> cos
-    <func> -> tan
-    <func> -> arcsin
-    <func> -> arccos
-    <func> -> tan
+    15. <op5> -> NUM
+    16. <op5> -> variable
+    17. <op5> -> <func> lpar <op1> rpar
+    18. <op5> -> lpar <op1> rpar
+    19. <func> -> sin
+    20. <func> -> cos
+    21. <func> -> tan
+    22. <func> -> arcsin
+    23. <func> -> arccos
+    24. <func> -> tan
 ## 5. FIRST and FOLLOW sets
     FIRST(<func>)={sin, cos, tan, arcsin, arccos, arctan}
 
@@ -108,3 +108,20 @@
     FOLLOW(<op5>)={exp, mult, div, sum, sub, rpar, $}
 
     FOLLOW(<func>)={lpar}
+
+## 6. LL1 verificacion by PREDICT sets 
+    PREDICT(<op1'> -> sum <op2> <op1'>)={sum}
+
+    PREDICT(<op1'> -> sub <op2>  <op1'>)={sub}
+
+    PREDICT(<op1'> -> <alpha>)={rpar, $}
+
+    PREDICT(<op2'> -> mult <op3> <op2'>)={mult}
+
+    PREDICT(<op2'> -> div <op3> <op2'>)={div}
+
+    PREDICT(<op2'> -> <alpha>)={sum, sub, rpar, $}
+
+    PREDICT(<op4'> -> exp <op3>)={exp}
+
+    PREDICT(<op4'> -> <alpha>)={mult, div, sum, sub, rpar, $}
