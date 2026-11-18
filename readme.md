@@ -62,6 +62,7 @@
     <op4'> -> <alpha>
 
     <op5> -> NUM
+    <op5> -> variable
     <op5> -> <func> lpar <op1> rpar
     <op5> -> lpar <op1> rpar
     <func> -> sin
@@ -70,3 +71,40 @@
     <func> -> arcsin
     <func> -> arccos
     <func> -> tan
+## 5. FIRST and FOLLOW sets
+    FIRST(<func>)={sin, cos, tan, arcsin, arccos, arctan}
+
+    FIRST(<op5>)={NUM, variable, lpar, sin, cos, tan, arcsin, arccos, arctan}
+
+    FIRST(<op4'>)={<alpha>, exp}
+
+    FIRST(<op4>)={NUM, variable, lpar, sin, cos, tan, arcsin, arccos, arctan}
+
+    FIRST(<op3>)={sum,sub, NUM, variable, lpar, sin, cos, tan, arcsin, arccos, arctan}
+
+    FIRST(<op2'>)={<alpha>, mult, div}
+
+    FIRST(<op2>)={sum,sub, NUM, variable, lpar, sin, cos, tan, arcsin, arccos, arctan}
+
+    FIRST(<op1'>)={<alpha>, sum, sub}
+
+    FIRST(<op1>)={sum,sub, NUM, variable, lpar, sin, cos, tan, arcsin, arccos, arctan}
+
+
+    FOLLOW(<op1>)={rpar, $}
+
+    FOLLOW(<op1'>)={rpar, $}
+    
+    FOLLOW(<op2>)={sum, sub, rpar, $}
+
+    FOLLOW(<op2'>)={sum, sub, rpar, $}
+
+    FOLLOW(<op3>)={mult, div, sum, sub, rpar, $}
+
+    FOLLOW(<op4>)={mult, div, sum, sub, rpar, $}
+
+    FOLLOW(<op4'>)={mult, div, sum, sub, rpar, $}
+
+    FOLLOW(<op5>)={exp, mult, div, sum, sub, rpar, $}
+
+    FOLLOW(<func>)={lpar}
