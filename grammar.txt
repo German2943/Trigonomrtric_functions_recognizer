@@ -1,0 +1,31 @@
+    <alpha> is empty string
+
+    <op1> -> <op2> <op1'>
+    <op1'> -> + <op2> <op1'>
+    <op1'> -> - <op2>  <op1'>
+    <op1'> -> <alpha>
+
+    <op2> -> <op3> <op2'>
+    <op2'> -> * <op3> <op2'>
+    <op2'> -> / <op3>  <op2'>
+    <op2'> -> <alpha>
+
+    <op3> -> - <op3>
+    <op3> -> + <op3>
+    <op3> -> <op4>
+
+
+    <op4> -> <op5> <op4'>
+    <op4'> -> ^ <op3>
+    <op4'> -> <alpha>
+
+    <op5> -> NUM
+    <op5> -> variable
+    <op5> -> <func> lpar <op1> rpar
+    <op5> -> lpar <op1> rpar
+    <func> -> sin
+    <func> -> cos
+    <func> -> tan
+    <func> -> arcsin
+    <func> -> arccos
+    <func> -> tan
