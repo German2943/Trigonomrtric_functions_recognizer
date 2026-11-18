@@ -32,3 +32,10 @@
     arcsin=arcsin
     arccos=arccos
     arctan=arctan
+
+## 3. Precedence
+    1. {+,-} // binary
+    2. {*,/}
+    3. {+,-} // unary
+    4. {^}
+    6. elemental items such as NUM and trigonometric fucntions are assumed with highest precedence
