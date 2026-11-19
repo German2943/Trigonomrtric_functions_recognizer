@@ -125,3 +125,29 @@
     PREDICT(<op4'> -> exp <op3>)={exp}
 
     PREDICT(<op4'> -> <alpha>)={mult, div, sum, sub, rpar, $}
+
+    PREDICT(<op3> -> sub <op3>)={sub}
+
+    PREDICT(<op3> -> sum <op3>)={sum}
+
+    PREDICT(<op3> -> <op4>)={NUM, variable, lpar, sin, cos, tan, arcsin, arccos, arctan}
+
+    PREDICT(<op5> -> NUM)={NUM}
+
+    PREDICT(<op5> -> variable)={variable}
+
+    PREDICT(<op5> -> <func> lpar <op1> rpar)={sin, cos, tan, arcsin, arccos, arctan}
+
+    PREDICT(<op5> -> lpar <op1> rpar)={lpar}
+
+    PREDICT(<func> -> sin)={sin}
+
+    PREDICT(<func> -> cos)={cos}
+
+    PREDICT(<func> -> tan)={tan}
+
+    PREDICT(<func> -> arcsin)={arcsin}
+
+    PREDICT(<func> -> arccos)={arccos}
+
+    PREDICT(<func> -> arctan)={arctan}
