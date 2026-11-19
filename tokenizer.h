@@ -23,7 +23,7 @@ enum terminal
 typedef struct token
 {
     char *lexem;
-    terminal TERMINAL;
+    enum terminal Termnial;
 } token;
 
 #endif TOKENIZER_H
