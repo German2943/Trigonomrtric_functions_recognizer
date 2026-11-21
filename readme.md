@@ -1,3 +1,6 @@
+# HOW TO RUN THE PROGRAM
+    gcc tokenizer.c -o t -lm
+    ./t
 ## 1. Acepted Symbols
     
     numbers:
