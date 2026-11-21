@@ -19,13 +19,15 @@ enum terminal
     ARCTAN, // 14
     FIN
 };
-
+typedef struct
+{
+    char name;
+    double valor;
+} Variable;
 typedef struct token
 {
     char *lexem;
     enum terminal Termnial;
-    int start;
-    int end;
 
 } token;
 #define NUM_ESTADOS 34

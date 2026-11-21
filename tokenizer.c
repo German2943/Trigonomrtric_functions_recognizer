@@ -1,3 +1,4 @@
+#include <math.h>
 #include "tokenizer.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,6 +6,9 @@
 #include <ctype.h>
 #define NONVALIDCHAR (-1)
 #define NONVALIDSTATE (-1)
+double var_value[256];
+int present_var[256];
+
 int tokenCounter = 0;
 int token_capacity = 100;
 int pos_tok = 0;
@@ -132,114 +136,135 @@ void match(int expected)
         exit(1);
     }
 }
-void parse_op1(void);
-void parse_op1p(void);
-void parse_op2(void);
-void parse_op2p(void);
-void parse_op3(void);
-void parse_op4(void);
-void parse_op4p(void);
-void parse_op5(void);
-void parse_func(void);
+double parse_op1(void);
+double parse_op1p(double izq);
+double parse_op2(void);
+double parse_op2p(double izq);
+double parse_op3(void);
+double parse_op4(void);
+double parse_op4p(double base);
+double parse_op5(void);
+enum terminal parse_func(void);
 
-void parse_func(void)
+enum terminal parse_func(void)
 {
-    switch (current_tok)
+    enum terminal f = current_tok;
+    switch (f)
     {
     case SIN:
-        match(SIN);
-        break;
     case COS:
-        match(COS);
-        break;
     case TAN:
-        match(TAN);
-        break;
     case ARCSIN:
-        match(ARCSIN);
-        break;
     case ARCCOS:
-        match(ARCCOS);
-        break;
     case ARCTAN:
-        match(ARCTAN);
+        match(f);
         break;
-
     default:
-        printf("sintax error in function parser\n");
-        break;
+        printf("sintax error in function func\n");
+        exit(1);
     }
+    return f;
 }
-void parse_op5(void)
+
+double parse_op5(void)
 {
+    double v;
     switch (current_tok)
     {
     case NUM:
+    {
+        char copia[64];
+        strncpy(copia, tokens[pos_tok].lexem, sizeof(copia) - 1);
+        copia[sizeof(copia) - 1] = '\0';
+        for (char *p = copia; *p; p++)
+            if (*p == ',')
+                *p = '.';
+        v = strtod(copia, NULL);
         match(NUM);
-        break;
+        return v;
+    }
     case VAR:
+    {
+        unsigned char letra = (unsigned char)tokens[pos_tok].lexem[0];
         match(VAR);
-        break;
+        return var_value[letra];
+    }
     case SIN:
     case COS:
     case TAN:
     case ARCSIN:
     case ARCCOS:
     case ARCTAN:
-        parse_func();
+    {
+        enum terminal f = parse_func();
         match(LPAR);
-        parse_op1();
+        double arg = parse_op1();
         match(RPAR);
-        break;
+        switch (f)
+        {
+        case SIN:
+            return sin(arg);
+        case COS:
+            return cos(arg);
+        case TAN:
+            return tan(arg);
+        case ARCSIN:
+            return asin(arg);
+        case ARCCOS:
+            return acos(arg);
+        default:
+            return atan(arg); /* ARCTAN */
+        }
+    }
     case LPAR:
         match(LPAR);
-        parse_op1();
+        v = parse_op1();
         match(RPAR);
-        break;
+        return v;
     default:
         printf("sintax error in function op5\n");
-        break;
+        exit(1);
     }
 }
-void parse_op4(void)
+double parse_op4(void)
 {
-    parse_op5();
-    parse_op4p();
+    double base = parse_op5();
+    return parse_op4p(base);
 }
 
-void parse_op4p(void)
+double parse_op4p(double base)
 {
     switch (current_tok)
     {
     case EPX:
+    {
         match(EPX);
-        parse_op3();
-        break;
+        double exponente = parse_op3();
+        return pow(base, exponente);
+    }
     case MULT:
     case DIV:
     case SUM:
     case SUB:
     case RPAR:
     case FIN:
-
-        break;
+        /* no hay potencia, el valor es la base */
+        return base;
     default:
-        printf("sintax error in op4p parser\n");
-        break;
+        printf("sintax error in function op4p\n");
+        exit(1);
     }
 }
-void parse_op3(void)
+double parse_op3(void)
 {
     switch (current_tok)
     {
     case SUB:
         match(SUB);
-        parse_op3();
-        break;
+        return -parse_op3();
     case SUM:
         match(SUM);
-        parse_op3();
-        break;
+        return parse_op3();
     case NUM:
     case VAR:
     case LPAR:
@@ -249,71 +274,101 @@ void parse_op3(void)
     case ARCSIN:
     case ARCCOS:
     case ARCTAN:
-        parse_op4();
-        break;
+        return parse_op4();
     default:
-        printf("sintax error in op3 parser\n");
-        break;
+        printf("sintax error in function op3\n");
+        exit(1);
     }
 }
-void parse_op2(void)
+double parse_op2(void)
 {
-    parse_op3();
-    parse_op2p();
+    double izq = parse_op3();
+    return parse_op2p(izq);
 }
 
-void parse_op2p(void)
+double parse_op2p(double izq)
 {
     switch (current_tok)
     {
     case MULT:
+    {
         match(MULT);
-        parse_op3();
-        parse_op2p();
-        break;
+        double der = parse_op3();
+        return parse_op2p(izq * der);
+    }
     case DIV:
+    {
         match(DIV);
-        parse_op3();
-        parse_op2p();
-        break;
+        double der = parse_op3();
+        return parse_op2p(izq / der);
+    }
     case SUM:
     case SUB:
     case RPAR:
     case FIN:
-        /*  no se consume nada */
-        break;
+        /* no hay más operadores de este nivel */
+        return izq;
     default:
-        printf("sintax error in op2p parser\n");
-        break;
+        printf("sintax error in function op2p\n");
+        exit(1);
     }
 }
-void parse_op1(void)
+double parse_op1(void)
 {
-    parse_op2();
-    parse_op1p();
+    double izq = parse_op2();
+    return parse_op1p(izq);
 }
 
-void parse_op1p(void)
+double parse_op1p(double izq)
 {
     switch (current_tok)
     {
     case SUM:
+    {
         match(SUM);
-        parse_op2();
-        parse_op1p();
-        break;
+        double der = parse_op2();
+        return parse_op1p(izq + der);
+    }
     case SUB:
+    {
         match(SUB);
-        parse_op2();
-        parse_op1p();
-        break;
+        double der = parse_op2();
+        return parse_op1p(izq - der);
+    }
     case RPAR:
     case FIN:
-        /*  no se consume nada */
-        break;
+        /*  no hay más operadores de este nivel */
+        return izq;
     default:
-        printf("sintax error in op1p parser\n");
-        break;
+        printf("sintax error in function op1p\n");
+        exit(1);
+    }
+}
+void var_recollection(void)
+{
+    for (int k = 0; tokens[k].Termnial != FIN; k++)
+    {
+        if (tokens[k].Termnial == VAR)
+        {
+
+            unsigned char letter = (unsigned char)tokens[k].lexem[0];
+            present_var[letter] = 1;
+        }
+    }
+}
+void ask_values(void)
+{
+    for (int c = 0; c < 256; c++)
+    {
+        if (present_var[c])
+        {
+            printf("value of %c: ", c);
+            if (scanf("%lf", &var_value[c]) != 1)
+            {
+                printf("invalid value\n");
+                exit(1);
+            }
+        }
     }
 }
 int main(void)
@@ -353,11 +408,24 @@ int main(void)
     for (int j = 0; j < tokenCounter; j++)
     {
         printf("token #%d: lexem-> %s with type %d\n", j, tokens[j].lexem, tokens[j].Termnial);
-        free(tokens[j].lexem);
     }
     printf("token #%d: lexem-> %s with type %d\n", tokenCounter, tokens[tokenCounter].lexem, tokens[tokenCounter].Termnial);
-    parse_op1();
 
+    var_recollection();
+    ask_values();
+    double result = parse_op1();
+    if (current_tok != FIN)
+    {
+        printf("sintax error: empty input\n");
+        exit(1);
+    }
+
+    printf("result: %g\n", result);
+    for (int j = 0; j < tokenCounter; j++)
+    {
+
+        free(tokens[j].lexem);
+    }
     free(buffer1);
     free(tokens);
     return 0;
