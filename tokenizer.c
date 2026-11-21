@@ -42,11 +42,11 @@ int columna(char c)
     case ')':
         return 69;
     default:
-        return -1; /* fuera del alfabeto */
+        return -1;
     }
 }
 
-#define ESTADO_TRAMPA 2 /* verifícalo en tabla_lexer.h, ver nota abajo */
+#define ESTADO_TRAMPA 2
 
 int tokenizar(const char *entrada)
 {
@@ -56,7 +56,7 @@ int tokenizar(const char *entrada)
     while (i < n)
     {
         int estado = 0;
-        long ultimo_fin = -1; /* fin (exclusivo) del último lexema aceptado */
+        long ultimo_fin = -1;
         int ultimo_tok = TOK_NINGUNO;
 
         for (size_t j = i; j < n; j++)
@@ -76,7 +76,7 @@ int tokenizar(const char *entrada)
             }
         }
 
-        if (ultimo_fin < 0) /* ningún prefijo fue aceptado */
+        if (ultimo_fin < 0)
         {
             fprintf(stderr, "error léxico en la posición %zu: '%c'\n", i, entrada[i]);
             return -1;
@@ -102,7 +102,7 @@ int tokenizar(const char *entrada)
         tokens[tokenCounter].Termnial = (enum terminal)ultimo_tok;
         tokenCounter++;
 
-        i = (size_t)ultimo_fin; /* retoma justo después del lexema */
+        i = (size_t)ultimo_fin;
     }
 
     return 0;
@@ -110,7 +110,7 @@ int tokenizar(const char *entrada)
 
 void clean(char *s)
 {
-    char *w = s; /* puntero de escritura */
+    char *w = s;
 
     for (char *r = s; *r != '\0'; r++)
     {
@@ -213,7 +213,7 @@ double parse_op5(void)
         case ARCCOS:
             return acos(arg);
         default:
-            return atan(arg); /* ARCTAN */
+            return atan(arg);
         }
     }
     case LPAR:
@@ -248,7 +248,7 @@ double parse_op4p(double base)
     case SUB:
     case RPAR:
     case FIN:
-        /* no hay potencia, el valor es la base */
+
         return base;
     default:
         printf("sintax error in function op4p\n");
@@ -306,7 +306,6 @@ double parse_op2p(double izq)
     case SUB:
     case RPAR:
     case FIN:
-        /* no hay más operadores de este nivel */
         return izq;
     default:
         printf("sintax error in function op2p\n");
@@ -337,7 +336,7 @@ double parse_op1p(double izq)
     }
     case RPAR:
     case FIN:
-        /*  no hay más operadores de este nivel */
+
         return izq;
     default:
         printf("sintax error in function op1p\n");
@@ -383,7 +382,7 @@ int main(void)
 
     while ((c = getchar()) != '\n' && c != EOF)
     {
-        if (len + 1 >= cap) /* deja siempre espacio para '\0' */
+        if (len + 1 >= cap)
         {
             cap *= 2;
             char *tmp = realloc(buffer1, cap);
