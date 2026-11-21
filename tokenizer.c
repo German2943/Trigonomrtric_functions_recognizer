@@ -8,7 +8,7 @@
 int tokenCounter = 0;
 int token_capacity = 100;
 int pos_tok = 0;
-enum terminal current_tok;
+#define current_tok (tokens[pos_tok].Termnial)
 token *tokens;
 int columna(char c)
 {
@@ -100,7 +100,7 @@ int tokenizar(const char *entrada)
 
         i = (size_t)ultimo_fin; /* retoma justo después del lexema */
     }
-    current_tok = tokens[pos_tok].Termnial;
+
     return 0;
 }
 
@@ -120,7 +120,11 @@ void clean(char *s)
 void match(int expected)
 {
     if (expected == tokens[pos_tok].Termnial)
+    {
         pos_tok++;
+        current_tok = tokens[pos_tok].Termnial;
+    }
+
     else
     {
         printf("syntax error: expected %d, got %d\n",
@@ -342,15 +346,16 @@ int main(void)
     clean(buffer1);
 
     tokenizar(buffer1);
-    tokens[tokenCounter + 1].Termnial = FIN;
-    tokens[tokenCounter + 1].lexem = "$";
-    tokenCounter++;
+    tokens[tokenCounter].lexem = "$";
+    tokens[tokenCounter].Termnial = FIN;
 
+    current_tok = tokens[pos_tok].Termnial;
     for (int j = 0; j < tokenCounter; j++)
     {
         printf("token #%d: lexem-> %s with type %d\n", j, tokens[j].lexem, tokens[j].Termnial);
         free(tokens[j].lexem);
     }
+    printf("token #%d: lexem-> %s with type %d\n", tokenCounter, tokens[tokenCounter].lexem, tokens[tokenCounter].Termnial);
     parse_op1();
 
     free(buffer1);
