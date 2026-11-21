@@ -16,7 +16,8 @@ enum terminal
     TAN,    // 11
     ARCSIN, // 12
     ARCCOS, // 13
-    ARCTAN  // 14
+    ARCTAN, // 14
+    FIN
 };
 
 typedef struct token
